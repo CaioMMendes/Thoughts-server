@@ -8,16 +8,20 @@ var FileStore = require("session-file-store")(session);
 import { createDBConnection } from "./db/conn";
 import thougthsRoutes from "./routes/thoughtsRoutes";
 import authRoutes from "./routes/authRoutes";
+import cors from "cors";
+import { credentials } from "./middleware/credentials";
+import { corsOptions } from "./config/corsOptions";
 
 const app = express();
-
 //receber resposta do body
 app.use(
   express.urlencoded({
     extended: true,
   })
 );
+app.use(credentials);
 app.use(express.json());
+app.use(cors(corsOptions));
 app.use(thougthsRoutes);
 app.use(authRoutes);
 //session middleware
@@ -44,9 +48,12 @@ app.use(
   })
 );
 app.use((req: any, res: Response, next: NextFunction) => {
+  console.log("aaaaaaaaaaaaaaaaaaaaaaaa");
+  console.log("session", req.session.userId);
   if (req.session.userId) {
     res.locals.session = req.session;
   }
+  next();
 });
 
 createDBConnection();
