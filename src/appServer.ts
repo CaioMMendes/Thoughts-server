@@ -11,8 +11,16 @@ import authRoutes from "./routes/authRoutes";
 import cors from "cors";
 import { credentials } from "./middleware/credentials";
 import { corsOptions } from "./config/corsOptions";
+import cookieParser from "cookie-parser";
 
 const app = express();
+const fileStoreOptions = {
+  logFn: function () {},
+  //   path: require("path").join(require("os").tempdir(), "sessions"),
+  path: path.join(os.tmpdir(), "sessions"),
+};
+
+app.use(cors(corsOptions));
 //receber resposta do body
 app.use(
   express.urlencoded({
@@ -20,17 +28,7 @@ app.use(
   })
 );
 app.use(credentials);
-app.use(express.json());
-app.use(cors(corsOptions));
-app.use(thougthsRoutes);
-app.use(authRoutes);
-//session middleware
-
-const fileStoreOptions = {
-  logFn: function () {},
-  //   path: require("path").join(require("os").tempdir(), "sessions"),
-  path: path.join(os.tmpdir(), "sessions"),
-};
+app.use(cookieParser());
 //todo ver como resolver as tipagens disso
 app.use(
   session({
@@ -41,7 +39,8 @@ app.use(
     store: new FileStore(fileStoreOptions),
     cookie: {
       secure: false,
-      maxAge: 360000,
+      maxAge: 360000000000,
+      // sameSite: "none",
       expires: new Date(Date.now() + 360000),
       httpOnly: true,
     },
@@ -49,12 +48,19 @@ app.use(
 );
 app.use((req: any, res: Response, next: NextFunction) => {
   console.log("aaaaaaaaaaaaaaaaaaaaaaaa");
-  console.log("session", req.session.userId);
+  console.log("reqsession", req.session);
+
   if (req.session.userId) {
     res.locals.session = req.session;
+    console.log("tem sessão");
   }
+  console.log("session", req.session.userId);
   next();
 });
+app.use(express.json());
+app.use(thougthsRoutes);
+app.use(authRoutes);
+//session middleware
 
 createDBConnection();
 export default app;
