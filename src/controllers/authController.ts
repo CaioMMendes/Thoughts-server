@@ -1,7 +1,9 @@
+import { thoughts } from "./../models/thoughts";
 import { user } from "../models/user";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { Session, SessionData } from "express-session";
+import { Op } from "sequelize";
 // interface MySession extends SessionData {
 //   userId?: number;
 // }
@@ -29,7 +31,7 @@ export const login = async (req: Request, res: Response) => {
       req.session.userId = validate.id;
       return res.json({
         id: validate.id,
-        nome: validate?.name,
+        name: validate?.name,
         email: validate?.email,
       });
     } else {
@@ -40,16 +42,12 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 export const logout = async (req: Request, res: Response) => {
-  console.log(req.session);
-  req.session.destroy((error) => {
-    console.log(error);
-  });
+  req.session.destroy((error) => {});
   return res.sendStatus(200);
 };
 export const register = async (req: Request, res: any) => {
   const { name, email, password } = req.body;
-  console.log(name, email, password);
-  console.log(req.body);
+
   if (Object.keys(req.body).length === 0) {
     return res.sendStatus(400);
   }
@@ -88,8 +86,117 @@ export const userInfo = async (req: Request, res: Response) => {
     });
     return res.json({
       id: validate?.id,
-      nome: validate?.name,
+      name: validate?.name,
       email: validate?.email,
+      logado: true,
     });
+  } else {
+    return res.sendStatus(401);
+  }
+};
+export const createThought = async (req: Request, res: Response) => {
+  if (Object.keys(req.body).length === 0) {
+    return res.sendStatus(401);
+  }
+  if (req?.session?.userId) {
+    const title = req.body.title;
+    const id = req.session.userId;
+
+    const validate = await thoughts.create({
+      title,
+      userId: id,
+    });
+    return res.json({ message: "Criado com sucesso" });
+  } else {
+    return res.sendStatus(401);
+  }
+};
+export const dashboardThoughts = async (req: Request, res: Response) => {
+  console.log(req.session.userId, "entrou aqui");
+  if (req?.session?.userId) {
+    const id = req.session.userId;
+
+    const validate = await thoughts.findAll({
+      where: {
+        userId: id,
+      },
+    });
+    return res.json(validate);
+  } else {
+    console.log("first");
+    return res.sendStatus(401);
+  }
+};
+export const deleteThought = async (req: Request, res: Response) => {
+  if (Object.keys(req.body).length === 0) {
+    return res.sendStatus(401);
+  }
+
+  if (req?.body?.id) {
+    const id = req.body.id;
+
+    const validate = await thoughts.destroy({
+      where: {
+        id: id,
+      },
+    });
+    return res.json({ message: "Deletado com sucesso" });
+  } else {
+    return res.sendStatus(401);
+  }
+};
+export const updateThought = async (req: Request, res: Response) => {
+  if (Object.keys(req.body).length === 0) {
+    return res.sendStatus(401);
+  }
+
+  if (req?.body) {
+    const { id, title } = req.body;
+
+    const validate = await thoughts.update(
+      { title },
+      {
+        where: {
+          id,
+        },
+      }
+    );
+    return res.json({ message: "Editado com sucesso" });
+  } else {
+    return res.sendStatus(401);
+  }
+};
+export const getThoughts = async (req: Request, res: Response) => {
+  try {
+    const validate = await thoughts.findAll({
+      include: {
+        model: user,
+        attributes: { exclude: ["password"] }, // Exclui o atributo 'password'
+      },
+    });
+    return res.json(validate);
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const searchThoughts = async (req: Request, res: Response) => {
+  if (Object.keys(req?.body).length === 0) {
+    return res.sendStatus(401);
+  }
+  const search = req.body.search;
+
+  try {
+    const validate = await thoughts.findAll({
+      include: {
+        model: user,
+        attributes: { exclude: ["password"] }, // Exclui o atributo 'password'
+      },
+      where: {
+        title: { [Op.like]: `%${search}%` },
+      },
+    });
+    return res.json(validate);
+  } catch (error) {
+    console.log(error);
   }
 };

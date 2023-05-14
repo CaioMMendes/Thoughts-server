@@ -41,20 +41,16 @@ app.use(
       secure: false,
       maxAge: 360000000000,
       // sameSite: "none",
-      expires: new Date(Date.now() + 360000),
+      expires: new Date(Date.now() + 360000000000),
       httpOnly: true,
     },
   })
 );
 app.use((req: any, res: Response, next: NextFunction) => {
-  console.log("aaaaaaaaaaaaaaaaaaaaaaaa");
-  console.log("reqsession", req.session);
-
   if (req.session.userId) {
     res.locals.session = req.session;
-    console.log("tem sessão");
   }
-  console.log("session", req.session.userId);
+
   next();
 });
 app.use(express.json());
