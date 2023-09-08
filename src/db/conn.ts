@@ -1,14 +1,22 @@
 import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
 import database from "./database";
 
+console.log("🚀", process.env.URI_DATABASE!);
+console.log("✏", database.uri);
 export const sequelize = new Sequelize(
-  database.database,
-  database.user,
-  database.password,
-
+  // database.database,
+  // database.user,
+  // database.password,
+  database.uri!,
   {
-    dialect: "mysql",
-    host: database.host,
+    dialect: "postgres",
+    dialectOptions: {
+      ssl: {
+        require: true,
+      },
+    },
+    // host: database.host,
   }
 );
 
