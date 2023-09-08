@@ -75,6 +75,8 @@ export const register = async (req: Request, res: any) => {
   }
 };
 export const userInfo = async (req: Request, res: Response) => {
+  console.log("🚨", req?.session?.userId);
+  console.log("🧬", req?.cookies);
   // console.log(req?.cookies?.session);
   // console.log(req?.session);
   if (req?.session?.userId) {
@@ -95,6 +97,8 @@ export const userInfo = async (req: Request, res: Response) => {
   }
 };
 export const createThought = async (req: Request, res: Response) => {
+  console.log("🚨", req?.session?.userId);
+  console.log("🧬", req?.cookies);
   if (Object.keys(req.body).length === 0) {
     return res.sendStatus(401);
   }
@@ -112,6 +116,8 @@ export const createThought = async (req: Request, res: Response) => {
   }
 };
 export const dashboardThoughts = async (req: Request, res: Response) => {
+  console.log("🚨", req?.session?.userId);
+  console.log("🧬", req?.cookies);
   console.log(req.session.userId, "entrou aqui");
   if (req?.session?.userId) {
     const id = req.session.userId;
@@ -167,6 +173,8 @@ export const updateThought = async (req: Request, res: Response) => {
   }
 };
 export const getThoughts = async (req: Request, res: Response) => {
+  console.log("🚨", req?.session?.userId);
+  console.log("🧬", req?.cookies);
   try {
     const validate = await thoughts.findAll({
       include: {
