@@ -32,6 +32,8 @@ app.use(cookieParser());
 //todo ver como resolver as tipagens disso
 app.use(
   session({
+    //todo por algum motivo ele não salva a session e o cookie nos cookies
+    //todo na hora de mandar no deploy não chega nada
     name: "session",
     secret: process.env.SESSIONSECRET as string,
     resave: false,
@@ -41,7 +43,7 @@ app.use(
       // secure: false,
       secure: true,
       maxAge: 360000000000,
-      // sameSite: "none",
+      sameSite: "none",
       expires: new Date(Date.now() + 360000000000),
       httpOnly: true,
     },
