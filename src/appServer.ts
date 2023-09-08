@@ -38,7 +38,8 @@ app.use(
     saveUninitialized: false,
     store: new FileStore(fileStoreOptions),
     cookie: {
-      secure: false,
+      // secure: false,
+      secure: true,
       maxAge: 360000000000,
       // sameSite: "none",
       expires: new Date(Date.now() + 360000000000),

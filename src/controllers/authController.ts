@@ -42,7 +42,21 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 export const logout = async (req: Request, res: Response) => {
+  const cookies = req.cookies;
+
+  if (!cookies?.session) return res.sendStatus(204);
   req.session.destroy((error) => {});
+  if (cookies?.session) {
+    res.clearCookie("session", {
+      httpOnly: true,
+
+      // sameSite: "none",
+
+      secure: true,
+    });
+
+    return res.sendStatus(204);
+  }
   return res.sendStatus(200);
 };
 export const register = async (req: Request, res: any) => {
