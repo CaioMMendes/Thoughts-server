@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 import dotenv from "dotenv";
 import database from "./database";
-
+import * as pg from "pg";
 console.log("🚀", process.env.URI_DATABASE!);
 console.log("✏", database.uri);
 export const sequelize = new Sequelize(
@@ -11,6 +11,7 @@ export const sequelize = new Sequelize(
   database.uri!,
   {
     dialect: "postgres",
+    dialectModule: pg,
     dialectOptions: {
       ssl: {
         require: true,
