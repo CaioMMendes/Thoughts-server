@@ -60,7 +60,7 @@ app.use(
       secure: true,
       // secure: true,
       maxAge: 60 * 60 * 1000 * 60 * 60,
-      sameSite: "lax",
+      sameSite: "none",
       // domain:,
       expires: new Date(Date.now() + 60 * 60 * 1000 * 60 * 60),
       httpOnly: true,
