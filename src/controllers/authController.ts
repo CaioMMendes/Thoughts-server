@@ -52,8 +52,8 @@ export const logout = async (req: Request, res: Response) => {
   if (cookies?.session) {
     res.clearCookie("session", {
       httpOnly: true,
-      sameSite: "none",
-      // secure: true,
+      sameSite: "lax",
+      secure: true,
     });
 
     return res.sendStatus(204);

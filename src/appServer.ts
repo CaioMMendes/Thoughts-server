@@ -47,14 +47,18 @@ app.use(
     saveUninitialized: false,
     // store: new FileStore(fileStoreOptions),
     store: store,
+    cookie: {
+      secure: true,
+      // secure: true,
+      maxAge: 60 * 60 * 1000 * 60 * 60,
+      sameSite: "lax",
+      // domain:,
+      expires: new Date(Date.now() + 60 * 60 * 1000 * 60 * 60),
+      httpOnly: true,
+    },
     // cookie: {
     //   secure: false,
-    //   // secure: true,
-    //   maxAge: 60 * 60 * 1000 * 60 * 60,
-    //   sameSite: "none",
-    //   // domain:,
-    //   expires: new Date(Date.now() + 60 * 60 * 1000 * 60 * 60),
-    //   // httpOnly: true,
+    //   sameSite: "lax",
     // },
   })
 );
