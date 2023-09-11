@@ -1,6 +1,6 @@
 interface CorsOptions {
   origin: string[];
-  optionsSuccessStatus: number;
+  // optionsSuccessStatus: number;
   credentials: boolean;
   methods: string[];
 }
@@ -13,6 +13,6 @@ export const corsOptions: CorsOptions = {
     process.env.ACEPTEDROUTES4 as string,
   ],
   methods: ["GET", "POST"],
-  optionsSuccessStatus: 200,
+  // optionsSuccessStatus: 200,
   credentials: true,
 };

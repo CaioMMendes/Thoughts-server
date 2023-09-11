@@ -15,6 +15,7 @@ import cookieParser from "cookie-parser";
 const pgSession = require("connect-pg-simple")(session);
 const { Pool } = require("pg");
 const app = express();
+app.set("trust proxy", 1);
 const fileStoreOptions = {
   logFn: function () {},
   path: path.join(os.tmpdir(), "sessions"),
