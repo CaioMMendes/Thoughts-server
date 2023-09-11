@@ -1,12 +1,10 @@
-import { thoughts } from "./../models/thoughts";
-import { user } from "../models/user";
-import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import { Request, Response } from "express";
 import { Session, SessionData } from "express-session";
 import { Op } from "sequelize";
-// interface MySession extends SessionData {
-//   userId?: number;
-// }
+import { user } from "../models/user";
+import { thoughts } from "./../models/thoughts";
+
 declare module "express-session" {
   interface SessionData {
     userId?: number;
@@ -26,12 +24,9 @@ export const login = async (req: Request, res: Response) => {
       email,
     },
   });
-  console.log("🐂", validate?.id);
   if (validate) {
     if (await bcrypt.compare(password, validate.password)) {
       req.session.userId = validate.id;
-      console.log(req?.session?.userId);
-      console.log(validate.id);
       return res.json({
         id: validate.id,
         name: validate?.name,
@@ -84,16 +79,10 @@ export const register = async (req: Request, res: any) => {
 
       req.session.userId = userDb.id;
       return res.status(201).json({ id: userDb.id, name, email });
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 };
 export const userInfo = async (req: Request, res: Response) => {
-  console.log(req?.session);
-
-  // console.log(req?.cookies?.session);
-  // console.log(req?.session);
   if (req?.session?.userId) {
     const id = req.session.userId;
     const validate = await user.findOne({
@@ -129,7 +118,6 @@ export const createThought = async (req: Request, res: Response) => {
   }
 };
 export const dashboardThoughts = async (req: Request, res: Response) => {
-  console.log(req.session.userId, "entrou aqui");
   if (req?.session?.userId) {
     const id = req.session.userId;
 
@@ -140,7 +128,6 @@ export const dashboardThoughts = async (req: Request, res: Response) => {
     });
     return res.json(validate);
   } else {
-    console.log("first");
     return res.sendStatus(401);
   }
 };
