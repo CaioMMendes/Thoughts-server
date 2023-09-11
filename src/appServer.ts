@@ -12,14 +12,20 @@ import cors from "cors";
 import { credentials } from "./middleware/credentials";
 import { corsOptions } from "./config/corsOptions";
 import cookieParser from "cookie-parser";
-
+const pgSession = require("connect-pg-simple")(session);
+const { Pool } = require("pg");
 const app = express();
 const fileStoreOptions = {
   logFn: function () {},
-  //   path: require("path").join(require("os").tempdir(), "sessions"),
   path: path.join(os.tmpdir(), "sessions"),
 };
-
+const pool = new Pool({
+  connectionString: `${process.env.URI_DATABASE}?sslmode=require`,
+});
+const store = new pgSession({
+  pool: pool,
+  tableName: "session",
+});
 app.use(cors(corsOptions));
 //receber resposta do body
 app.use(
@@ -28,35 +34,64 @@ app.use(
   })
 );
 app.use(credentials);
+app.use(express.json());
 app.use(cookieParser());
 //todo ver como resolver as tipagens disso
 app.use(
   session({
     //todo por algum motivo ele não salva a session e o cookie nos cookies
     //todo na hora de mandar no deploy não chega nada
-    name: "session",
+    // name: "session",
     secret: process.env.SESSIONSECRET as string,
     resave: false,
     saveUninitialized: false,
-    store: new FileStore(fileStoreOptions),
-    cookie: {
-      // secure: false,
-      secure: true,
-      maxAge: 360000000000,
-      sameSite: "none",
-      expires: new Date(Date.now() + 360000000000),
-      httpOnly: true,
-    },
+    // store: new FileStore(fileStoreOptions),
+    store: store,
+    // cookie: {
+    //   secure: false,
+    //   // secure: true,
+    //   maxAge: 60 * 60 * 1000 * 60 * 60,
+    //   sameSite: "none",
+    //   // domain:,
+    //   expires: new Date(Date.now() + 60 * 60 * 1000 * 60 * 60),
+    //   // httpOnly: true,
+    // },
   })
 );
 app.use((req: any, res: Response, next: NextFunction) => {
+  const key = process.env.SESSIONSECRET;
+  console.log("🦁", req.session.userId);
+  console.log("🦁", req.session);
+
   if (req.session.userId) {
     res.locals.session = req.session;
   }
 
   next();
 });
-app.use(express.json());
+// Middleware personalizado para recuperar a sessão do banco de dados
+// app.use(async (req, res, next) => {
+//   console.log("🦁", req.session.userId);
+//   if (req.session.userId) {
+//     // Você pode fazer uma consulta ao banco de dados para recuperar os dados da sessão com base no ID da sessão
+//     const client = await pool.connect();
+//     try {
+//       const result = await client.query(
+//         "SELECT * FROM session WHERE sid = $1",
+//         [req.sessionID]
+//       );
+//       if (result.rows.length > 0) {
+//         // Recupere os dados da sessão do banco de dados
+//         req.session = result.rows[0].sess;
+//       }
+//     } finally {
+//       client.release();
+//     }
+//   }
+
+//   next();
+// });
+
 app.use(thougthsRoutes);
 app.use(authRoutes);
 //session middleware
