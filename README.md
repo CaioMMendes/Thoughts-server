@@ -7,11 +7,9 @@ Este é o servidor do projeto thoughts.
 
 O projeto foi desenvolvido utilizando as seguintes tecnologias:
 
-- [ReactJs](https://pt-br.reactjs.org/)
-- [Tailwindcss](https://tailwindcss.com/)
-- [Git](https://git-scm.com/)
-- [Github](https://github.com/)
 - [NodeJs](https://nodejs.org/en)
 - [Typescript](https://www.typescriptlang.org/)
+- [Express](https://expressjs.com/pt-br/)
+- [Express-session](https://expressjs.com/pt-br/)
 - [Sequelize](https://sequelize.org/)
-- [Mysql](https://www.mysql.com/)
+- [PostgreSQL](https://www.postgresql.org/)
