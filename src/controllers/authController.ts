@@ -187,7 +187,7 @@ export const searchThoughts = async (req: Request, res: Response) => {
   if (Object.keys(req?.body).length === 0) {
     return res.sendStatus(401);
   }
-  const search = req.body.search;
+  const { search } = req.body;
 
   try {
     const validate = await thoughts.findAll({
@@ -196,7 +196,7 @@ export const searchThoughts = async (req: Request, res: Response) => {
         attributes: { exclude: ["password"] }, // Exclui o atributo 'password'
       },
       where: {
-        title: { [Op.like]: `%${search}%` },
+        title: { [Op.iLike]: `%${search}%` },
       },
     });
     return res.json(validate);
